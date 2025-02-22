@@ -2,7 +2,7 @@ import routes from "/:routes.js";
 import create from "/:create.jsx";
 
 export default {
-  context,  // ✅ Fixed import reference
+  context: import("/:context.js"),
   routes,
   create,
 };

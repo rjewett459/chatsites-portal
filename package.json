@@ -1,12 +1,11 @@
 {
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0 --port $PORT --outDir dist",
+    "dev": "node server.js --dev",
     "start": "node server.js",
+    "build": "npm run build:client && npm run build:server",
     "build:client": "vite build --outDir dist/client --ssrManifest",
-    "build:server": "vite build --outDir dist/server --ssr /index.js",
+    "build:server": "vite build --outDir dist/server --ssr entry-server.jsx",
     "devinstall": "zx ../../devinstall.mjs -- node server.js --dev",
     "lint": "eslint . --ext .js,.jsx --fix"
   },
@@ -26,7 +25,6 @@
     "postcss-nesting": "^12.0.2",
     "postcss-preset-env": "^7.7.1",
     "tailwindcss": "^3.4.1",
-    "vite": "^5.0.2",
-    "vite-plugin-svgr": "^4.3.0"
+    "vite": "^5.0.2"
   }
 }
