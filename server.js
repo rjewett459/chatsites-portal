@@ -55,6 +55,48 @@ app.get("/token", async (req, res) => {
       },
     );
 
+app.get("/token", async (req, res) => {
+  console.log("🔍 Received `/token` request...");
+
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+
+  if (!apiKey) {
+    console.error("❌ ERROR: Missing OpenAI API Key!");
+    return res.status(500).json({ error: "Missing OpenAI API Key. Please configure it in Render." });
+  }
+
+  try {
+    console.log("📤 Sending request to OpenAI API...");
+    
+    const response = await fetch("https://api.openai.com/v1/realtime/sessions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-realtime-preview-2024-12-17",
+        voice: "verse",
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("❌ OpenAI API Error:", data);
+      return res.status(response.status).json(data);
+    }
+
+    console.log("✅ OpenAI Response:", JSON.stringify(data, null, 2));
+    res.json(data);
+  } catch (error) {
+    console.error("❌ Server Error:", error);
+    res.status(500).json({ error: "Failed to generate token" });
+  }
+});
+
     const data = await response.json();
     console.log("✅ OpenAI Response:", JSON.stringify(data, null, 2));
 
