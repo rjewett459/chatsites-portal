@@ -1,4 +1,5 @@
-import routes from "/:routes.js";
+import routes from './routes.js'; // Use relative path
+
 import create from "/:create.jsx";
 
 export default {
