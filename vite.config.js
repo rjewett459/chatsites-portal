@@ -1,10 +1,11 @@
-import { join, dirname, resolve } from "path";
-import { fileURLToPath } from "url";
-import react from "@vitejs/plugin-react";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-const path = fileURLToPath(import.meta.url);
-
-export default {
-  root: join(dirname(path), "client"),
+export default defineConfig({
   plugins: [react()],
-};
+  preview: {
+    host: '0.0.0.0',  // Ensures Vite binds to all interfaces
+    port: 10000,      // Ensure it matches Render’s expected port
+    allowedHosts: ['chatsites-portal.onrender.com'] // Allow Render host
+  }
+});
