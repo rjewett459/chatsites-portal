@@ -8,7 +8,16 @@ export default {
   root: join(dirname(path), "client"),
   plugins: [react()],
   server: {
-    allowedHosts: ["chatsites-portal.onrender.com"],  // ✅ Allow Render domain
+    host: true,  // ✅ Ensure Vite allows external access
+    strictPort: true,
+    port: 3000,  // ✅ Ensure the correct port is set
+    allowedHosts: ["chatsites-portal.onrender.com"],  // ✅ Allow your Render domain
+    cors: true, // ✅ Ensure CORS is enabled
   },
+  preview: {
+    port: 4173, // ✅ Ensure preview works
+    allowedHosts: ["chatsites-portal.onrender.com"],
+  }
 };
+
 
