@@ -9,6 +9,7 @@ https://tailwindcss.com/docs/preflight
 :root {
   --color-base: #efefef;
   --color-highlight: #ff80ff;
+  --divider-color: #ccc;
 }
 
 html,
@@ -21,4 +22,34 @@ body {
   font-family: "Consolas", "Andale Mono", monospace;
   font-size: 0.9rem;
   background-color: var(--color-base);
+}
+
+/* Resizable divider */
+.resizable-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.resizable-left {
+  flex-grow: 1;
+  overflow-y: auto;
+  min-width: 200px;
+}
+
+.resizable-right {
+  width: 380px;
+  overflow-y: auto;
+  min-width: 200px;
+}
+
+.resizer {
+  width: 5px;
+  cursor: ew-resize;
+  background-color: var(--divider-color);
+  position: relative;
+}
+
+.resizer:hover {
+  background-color: var(--color-highlight);
 }

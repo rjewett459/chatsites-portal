@@ -11,118 +11,123 @@ export default function App() {
   const peerConnection = useRef(null);
   const audioElement = useRef(null);
 
-  async function startSession() {
-    // Get an ephemeral key from the Fastify server
-    const tokenResponse = await fetch("/token");
-    const data = await tokenResponse.json();
-    const EPHEMERAL_KEY = data.client_secret.value;
+  // ✅ Fix: Ensure Resizing Works
+  const [panelWidth, setPanelWidth] = useState(380); // Initial right panel width
+  const isResizingRef = useRef(false);
 
-    // Create a peer connection
-    const pc = new RTCPeerConnection();
-
-    // Set up to play remote audio from the model
-    audioElement.current = document.createElement("audio");
-    audioElement.current.autoplay = true;
-    pc.ontrack = (e) => (audioElement.current.srcObject = e.streams[0]);
-
-    // Add local audio track for microphone input in the browser
-    const ms = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-    });
-    pc.addTrack(ms.getTracks()[0]);
-
-    // Set up data channel for sending and receiving events
-    const dc = pc.createDataChannel("oai-events");
-    setDataChannel(dc);
-
-    // Start the session using the Session Description Protocol (SDP)
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-
-    const baseUrl = "https://api.openai.com/v1/realtime";
-    const model = "gpt-4o-realtime-preview-2024-12-17";
-    const sdpResponse = await fetch(`${baseUrl}?model=${model}`, {
-      method: "POST",
-      body: offer.sdp,
-      headers: {
-        Authorization: `Bearer ${EPHEMERAL_KEY}`,
-        "Content-Type": "application/sdp",
-      },
-    });
-
-    const answer = {
-      type: "answer",
-      sdp: await sdpResponse.text(),
+  useEffect(() => {
+    const handleMouseMove = (event) => {
+      if (!isResizingRef.current) return;
+      const newWidth = window.innerWidth - event.clientX;
+      if (newWidth > 200 && newWidth < window.innerWidth - 300) {
+        setPanelWidth(newWidth);
+      }
     };
-    await pc.setRemoteDescription(answer);
 
-    peerConnection.current = pc;
-  }
+    const handleMouseUp = () => {
+      isResizingRef.current = false;
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
 
-  // Stop current session, clean up peer connection and data channel
-  function stopSession() {
-    if (dataChannel) {
-      dataChannel.close();
-    }
+    document.addEventListener("mouseup", handleMouseUp);
+    return () => document.removeEventListener("mouseup", handleMouseUp);
+  }, []);
 
-    peerConnection.current.getSenders().forEach((sender) => {
-      if (sender.track) {
-        sender.track.stop();
+  const handleMouseDown = () => {
+    isResizingRef.current = true;
+    document.addEventListener("mousemove", (event) => {
+      if (!isResizingRef.current) return;
+      const newWidth = window.innerWidth - event.clientX;
+      if (newWidth > 200 && newWidth < window.innerWidth - 300) {
+        setPanelWidth(newWidth);
       }
     });
+  };
 
+  // ✅ Fix: Ensure AI Connection Works
+  async function startSession() {
+    try {
+      console.log("Fetching token from /token...");
+      const tokenResponse = await fetch("/token");
+      if (!tokenResponse.ok) {
+        throw new Error(`HTTP Error: ${tokenResponse.status}`);
+      }
+      const data = await tokenResponse.json();
+      const EPHEMERAL_KEY = data.client_secret.value;
+      console.log("Token received:", EPHEMERAL_KEY);
+
+      // Create WebRTC connection
+      const pc = new RTCPeerConnection();
+      audioElement.current = document.createElement("audio");
+      audioElement.current.autoplay = true;
+      pc.ontrack = (e) => (audioElement.current.srcObject = e.streams[0]);
+
+      const ms = await navigator.mediaDevices.getUserMedia({ audio: true });
+      pc.addTrack(ms.getTracks()[0]);
+
+      const dc = pc.createDataChannel("oai-events");
+      setDataChannel(dc);
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+
+      const sdpResponse = await fetch("https://api.openai.com/v1/realtime", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${EPHEMERAL_KEY}`,
+          "Content-Type": "application/sdp",
+        },
+        body: offer.sdp,
+      });
+
+      const answer = { type: "answer", sdp: await sdpResponse.text() };
+      await pc.setRemoteDescription(answer);
+      peerConnection.current = pc;
+      setIsSessionActive(true);
+
+      console.log("✅ AI Session Started!");
+    } catch (error) {
+      console.error("🚨 Error starting AI session:", error);
+    }
+  }
+
+  function stopSession() {
+    if (dataChannel) dataChannel.close();
     if (peerConnection.current) {
+      peerConnection.current.getSenders().forEach((sender) => sender.track?.stop());
       peerConnection.current.close();
     }
-
     setIsSessionActive(false);
     setDataChannel(null);
     peerConnection.current = null;
+    console.log("Session stopped.");
   }
 
-  // Send a message to the model
   function sendClientEvent(message) {
     if (dataChannel) {
       message.event_id = message.event_id || crypto.randomUUID();
       dataChannel.send(JSON.stringify(message));
       setEvents((prev) => [message, ...prev]);
     } else {
-      console.error(
-        "Failed to send message - no data channel available",
-        message,
-      );
+      console.error("No data channel available");
     }
   }
 
-  // Send a text message to the model
   function sendTextMessage(message) {
-    const event = {
+    sendClientEvent({
       type: "conversation.item.create",
-      item: {
-        type: "message",
-        role: "user",
-        content: [
-          {
-            type: "input_text",
-            text: message,
-          },
-        ],
-      },
-    };
-
-    sendClientEvent(event);
+      item: { type: "message", role: "user", content: [{ type: "input_text", text: message }] },
+    });
     sendClientEvent({ type: "response.create" });
   }
 
-  // Attach event listeners to the data channel when a new one is created
+  // ✅ Fix: Ensure Event Log Updates
   useEffect(() => {
     if (dataChannel) {
-      // Append new server events to the list
       dataChannel.addEventListener("message", (e) => {
         setEvents((prev) => [JSON.parse(e.data), ...prev]);
       });
-
-      // Set session active when the data channel is opened
       dataChannel.addEventListener("open", () => {
         setIsSessionActive(true);
         setEvents([]);
@@ -134,16 +139,17 @@ export default function App() {
     <>
       <nav className="absolute top-0 left-0 right-0 h-16 flex items-center">
         <div className="flex items-center gap-4 w-full m-4 pb-2 border-0 border-b border-solid border-gray-200">
-          <img style={{ width: "24px" }} src={logo} />
-          <h1>realtime console</h1>
+          <img style={{ width: "24px" }} src={logo} alt="logo" />
+          <h1>ChatSites™ AI Portal</h1>
         </div>
       </nav>
-      <main className="absolute top-16 left-0 right-0 bottom-0">
-        <section className="absolute top-0 left-0 right-[380px] bottom-0 flex">
-          <section className="absolute top-0 left-0 right-0 bottom-32 px-4 overflow-y-auto">
+      <main className="absolute top-16 left-0 right-0 bottom-0 flex">
+        {/* Left Panel (Event Log) */}
+        <section className="flex-grow flex flex-col">
+          <section className="w-full px-4 flex-grow overflow-y-auto">
             <EventLog events={events} />
           </section>
-          <section className="absolute h-32 left-0 right-0 bottom-0 p-4">
+          <div className="w-full p-4 flex justify-center">
             <SessionControls
               startSession={startSession}
               stopSession={stopSession}
@@ -152,9 +158,21 @@ export default function App() {
               events={events}
               isSessionActive={isSessionActive}
             />
-          </section>
+          </div>
         </section>
-        <section className="absolute top-0 w-[380px] right-0 bottom-0 p-4 pt-0 overflow-y-auto">
+
+        {/* Resizer */}
+        <div
+          onMouseDown={handleMouseDown}
+          className="w-2 cursor-ew-resize bg-gray-400 hover:bg-gray-600"
+          style={{ height: "100vh" }}
+        />
+
+        {/* Right Panel (Tool Panel) */}
+        <section
+          className="p-4 pt-0 overflow-y-auto"
+          style={{ width: `${panelWidth}px` }}
+        >
           <ToolPanel
             sendClientEvent={sendClientEvent}
             sendTextMessage={sendTextMessage}
