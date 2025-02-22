@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "vite", 
     "build": "vite build",
-    "preview": "vite preview --port 10000 --host"
+    "preview": "vite preview --port 10000 --host",
     "start": "node server.js",
     "build:client": "vite build --outDir dist/client --ssrManifest",
     "build:server": "vite build --outDir dist/server --ssr /index.js",
