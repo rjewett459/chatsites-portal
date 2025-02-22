@@ -1,11 +1,14 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
+  root: 'client',  // Set correct root directory
   plugins: [react()],
-  preview: {
-    host: '0.0.0.0',  // Ensures Vite binds to all interfaces
-    port: 10000,      // Ensure it matches Render’s expected port
-    allowedHosts: ['chatsites-portal.onrender.com'] // Allow Render host
+  build: {
+    outDir: '../dist',  // Ensure build goes to the correct place
+  },
+  server: {
+    historyApiFallback: true,
   }
 });

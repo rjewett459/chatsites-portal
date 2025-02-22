@@ -1,3 +1,4 @@
+import EntryClient from './client/entry-client.jsx';
 import express from "express";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
