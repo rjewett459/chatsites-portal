@@ -1,9 +1,8 @@
-import routes from './routes.js'; // Use relative path
-
+import routes from "/:routes.js";
 import create from "/:create.jsx";
 
 export default {
-  context: import("/:context.js"),
+  context,  // ✅ Fixed import reference
   routes,
   create,
 };

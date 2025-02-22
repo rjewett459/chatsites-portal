@@ -3,7 +3,11 @@ import express from "express";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
+<<<<<<< HEAD
 dotenv.config();  // Load environment variables
+=======
+dotenv.config(); // ✅ Loads environment variables
+>>>>>>> 13e6147 (Updated API key usage, added missing components, and fixed imports)
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -17,6 +21,10 @@ if (!apiKey) {
   console.log("✅ OpenAI API Key loaded successfully.");
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 13e6147 (Updated API key usage, added missing components, and fixed imports)
 // Configure Vite middleware for React client
 const vite = await createViteServer({
   server: { middlewareMode: true },
