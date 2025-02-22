@@ -1,14 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
+import svgr from 'vite-plugin-svgr'; // Add this plugin
 
 export default defineConfig({
-  root: 'client',  // Set correct root directory
-  plugins: [react()],
+  plugins: [react(), svgr()],
   build: {
-    outDir: '../dist',  // Ensure build goes to the correct place
+    outDir: 'dist',
+    emptyOutDir: true,
   },
-  server: {
-    historyApiFallback: true,
-  }
 });
