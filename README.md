@@ -1,6 +1,7 @@
-# OpenAI Realtime Console
+# # ChatSites AI Portal
 
-This is an example application showing how to use the [OpenAI Realtime API](https://platform.openai.com/docs/guides/realtime) with [WebRTC](https://platform.openai.com/docs/guides/realtime-webrtc).
+This is an example application demonstrating the ChatSites Realtime AI Portal, leveraging WebRTC for live AI-driven conversations.
+
 
 ## Installation and usage
 
