@@ -1,0 +1,119 @@
+{
+  "business_name": "ChatSites AI",
+  "description": "ChatSites™ is a voice-first AI-powered interactive portal, enabling businesses to engage customers via voice, text, and dynamic content.",
+  "services": [
+    {
+      "name": "Starter Plan - Text Only",
+      "price": "$99/month + $249 Non-Refundable Setup Fee",
+      "features": [
+        "Web Chat on your website",
+        "Facebook Messenger",
+        "Instagram",
+        "Email"
+      ]
+    },
+    {
+      "name": "Growth Plan - Text & Voice",
+      "price": "$229/month (includes 600 minutes, 12 cents per min over 600) + $749 Setup Fee",
+      "features": [
+        "Includes all Starter Plan features",
+        "WhatsApp",
+        "Telegram"
+      ]
+    },
+    {
+      "name": "Premium Plan - Full AI Engagement",
+      "price": "$429/month (includes 600 minutes, 12 cents per min over 600) + $1149 Setup Fee",
+      "features": [
+        "Includes all Growth Plan features",
+        "SMS",
+        "Voice Calls"
+      ]
+    }
+  ],
+  "discounts": "Save Two Months FREE with Annual Plans.",
+  "enterprise": {
+    "name": "Run Voice AI 24/7",
+    "price": "$4300 per month",
+    "tech_stack": {
+      "STT": "OAI Whisper - $0.006 per minute",
+      "LLM": "Chat GPT 4.o Realtime - 0.018 cents per minute",
+      "TTS": "OpenAI TTS - $30, 6 cents per minute",
+      "Twilio": "1.4 cents per minute + $20 per month"
+    },
+    "total_cost": "0.07 per minute (OUR COST)",
+    "total_price": "0.09 per minute"
+  },
+  "assistant_guidelines": {
+    "voice_first": "Always respond in both text and voice to help users transition to voice-first interaction.",
+    "language_selection": "On first interaction, ask users if they’d like to interact in a different language.",
+    "keep_it_short": "Keep responses short and engaging (1-2 sentences max).",
+    "new_users": "If a user is new, don’t push them into building a ChatSite immediately. Instead, welcome them, show them around, and explain how ChatSites work.",
+    "mini_builder_trigger": "If the user mentions 'build' or 'builder,' guide them to the MINI page builder.",
+    "pricing_query": "If a user asks about pricing, recommend emailing sales@chatsites.com for a tailored quote."
+  },
+  "user_interactions": {
+    "new_users": [
+      {
+        "question": "I'm not sure what a ChatSite is...",
+        "response": "No worries! A ChatSite is like your digital front door, welcoming visitors with real-time AI-powered conversations. Think of it as an interactive way to engage your audience!"
+      },
+      {
+        "question": "How can I use ChatSites for my business?",
+        "response": "ChatSites can transform customer interactions, boosting engagement, sales, and customer support through smart AI-driven conversations."
+      },
+      {
+        "question": "Can you show me some examples?",
+        "response": "Absolutely! Here’s a link to some stellar ChatSites in action, showcasing their versatility! [INSERT EXAMPLES LINK]"
+      }
+    ],
+    "returning_users": [
+      {
+        "question": "Welcome back!",
+        "response": "Ready to dive back into editing your ChatSite or explore new features? Let me know how I can assist you today."
+      }
+    ]
+  },
+  "faq": [
+    {
+      "question": "How much does it cost to use ChatSites?",
+      "answer": "We offer multiple plans based on your needs. Pricing starts at $99/month for text-only chat. For detailed pricing, check our plans above or contact sales@chatsites.ai."
+    },
+    {
+      "question": "Can I use ChatSites AI for voice interactions?",
+      "answer": "Yes! Our Growth and Premium plans include voice capabilities, allowing users to interact using speech."
+    },
+    {
+      "question": "Do you support multiple chat channels?",
+      "answer": "Yes! ChatSites integrates with Web Chat, Facebook Messenger, Instagram, Email, WhatsApp, Telegram, SMS, and Voice Calls, depending on your plan."
+    },
+    {
+      "question": "Can I customize my ChatSite's branding?",
+      "answer": "Absolutely! ChatSites allows full customization of branding, including colors, logos, and chat behavior."
+    },
+    {
+      "question": "How does the AI handle conversations?",
+      "answer": "ChatSites AI uses real-time LLM processing, pulling responses from a trained knowledge base while keeping interactions natural and engaging."
+    },
+    {
+      "question": "How do I get started with my own ChatSite?",
+      "answer": "Click [here] to start using our MINI page builder, or contact our team for a full setup."
+    },
+    {
+      "question": "Can ChatSites handle customer service automation?",
+      "answer": "Yes! ChatSites can answer FAQs, handle lead generation, and integrate with CRMs to streamline customer service."
+    },
+    {
+      "question": "Is there a free trial available?",
+      "answer": "Yes! You can explore ChatSites with a free trial. Contact sales@chatsites.ai for details."
+    }
+  ],
+  "contact_info": {
+    "email": "support@chatsites.ai",
+    "sales_email": "sales@chatsites.ai",
+    "phone": "+1-480-862-0288"
+  }
+}
+
+
+

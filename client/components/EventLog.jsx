@@ -33,11 +33,11 @@ function Event({ event, timestamp }) {
   );
 }
 
-export default function EventLog({ events }) {
+export default function EventLog({ events, toolName }) {
   const eventsToDisplay = [];
   let deltaEvents = {};
 
-  events.forEach((event) => {
+  events.forEach((event, index) => {
     if (event.type.endsWith("delta")) {
       if (deltaEvents[event.type]) {
         // for now just log a single event per render pass
@@ -47,9 +47,12 @@ export default function EventLog({ events }) {
       }
     }
 
+    // ✅ Ensure a globally unique key by including toolName + event type + timestamp fallback
+    const uniqueKey = event.event_id || `${toolName}-${event.type}-${index}-${Date.now()}`;
+
     eventsToDisplay.push(
       <Event
-        key={event.event_id}
+        key={uniqueKey} // Ensuring every key is unique
         event={event}
         timestamp={new Date().toLocaleTimeString()}
       />,

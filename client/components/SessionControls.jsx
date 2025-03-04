@@ -70,8 +70,8 @@ export default function SessionControls({
   stopSession,
   sendClientEvent,
   sendTextMessage,
-  serverEvents,
   isSessionActive,
+  events,  // ✅ Use `events` instead of `serverEvents`
 }) {
   return (
     <div className="flex gap-4 border-t-2 border-gray-200 h-full rounded-md">
@@ -80,7 +80,7 @@ export default function SessionControls({
           stopSession={stopSession}
           sendClientEvent={sendClientEvent}
           sendTextMessage={sendTextMessage}
-          serverEvents={serverEvents}
+          events={events}  // ✅ Pass `events` instead
         />
       ) : (
         <SessionStopped startSession={startSession} />

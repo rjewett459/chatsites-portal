@@ -14,29 +14,47 @@ const vite = await createViteServer({
 });
 app.use(vite.middlewares);
 
-// API route for token generation
+// API route for WebRTC token generation
 app.get("/token", async (req, res) => {
   try {
-    const response = await fetch(
-      "https://api.openai.com/v1/realtime/sessions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-realtime-preview-2024-12-17",
-          voice: "sage",
-        }),
-      },
-    );
+    console.log("🔄 Requesting WebRTC token from OpenAI...");
 
+    // Ensure the API key is available
+    if (!apiKey) {
+      throw new Error("Missing OpenAI API Key. Check your .env file.");
+    }
+
+    const response = await fetch("https://api.openai.com/v1/realtime/sessions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-realtime-preview-2024-12-17",
+        voice: "sage",
+      }),
+    });
+
+    console.log("🔍 OpenAI API Response Status:", response.status);
     const data = await response.json();
-    res.json(data);
+    console.log("🔍 OpenAI API Response Data:", data);
+
+    if (!response.ok) {
+      throw new Error(`OpenAI API Error: ${data.error?.message || "Unknown error"}`);
+    }
+
+    // ✅ Fix: Extract `client_secret.value` instead of `token`
+    const token = data.client_secret?.value;
+    if (!token) {
+      throw new Error("No client secret received from OpenAI");
+    }
+
+    console.log("✅ WebRTC client secret received:", token);
+    res.json({ token });
   } catch (error) {
-    console.error("Token generation error:", error);
-    res.status(500).json({ error: "Failed to generate token" });
+    console.error("❌ Token generation error:", error.message);
+    res.status(500).json({ error: error.message });
   }
 });
 

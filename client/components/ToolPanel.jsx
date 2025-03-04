@@ -1,133 +1,66 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const functionDescription = `
-Call this function when a user asks for a color palette.
-`;
+export default function ToolPanel({ isSessionActive, sendClientEvent }) {
+  const [isToolRegistered, setIsToolRegistered] = useState(false);
 
-const sessionUpdate = {
-  type: "session.update",
-  session: {
-    tools: [
-      {
-        type: "function",
-        name: "display_color_palette",
-        description: functionDescription,
-        parameters: {
-          type: "object",
-          strict: true,
-          properties: {
-            theme: {
-              type: "string",
-              description: "Description of the theme for the color scheme.",
-            },
-            colors: {
-              type: "array",
-              description: "Array of five hex color codes based on the theme.",
-              items: {
-                type: "string",
-                description: "Hex color code",
+  useEffect(() => {
+    if (!isSessionActive || isToolRegistered) return;
+
+    console.log("✅ Registering tools...");
+
+    const sessionUpdate = {
+      type: "session.update",
+      session: {
+        tools: [
+          {
+            type: "function",
+            name: "provide_chat_sites_info",
+            description: "Fetches information about ChatSites from a structured knowledge base.",
+            parameters: {
+              type: "object",
+              properties: {
+                topic: {
+                  type: "string",
+                  description: "The topic the user is asking about (e.g., services, pricing, support).",
+                },
               },
+              required: ["topic"],
             },
           },
-          required: ["theme", "colors"],
-        },
-      },
-    ],
-    tool_choice: "auto",
-  },
-};
-
-function FunctionCallOutput({ functionCallOutput }) {
-  const { theme, colors } = JSON.parse(functionCallOutput.arguments);
-
-  const colorBoxes = colors.map((color) => (
-    <div
-      key={color}
-      className="w-full h-16 rounded-md flex items-center justify-center border border-gray-200"
-      style={{ backgroundColor: color }}
-    >
-      <p className="text-sm font-bold text-black bg-slate-100 rounded-md p-2 border border-black">
-        {color}
-      </p>
-    </div>
-  ));
-
-  return (
-    <div className="flex flex-col gap-2">
-      <p>Theme: {theme}</p>
-      {colorBoxes}
-      <pre className="text-xs bg-gray-100 rounded-md p-2 overflow-x-auto">
-        {JSON.stringify(functionCallOutput, null, 2)}
-      </pre>
-    </div>
-  );
-}
-
-export default function ToolPanel({
-  isSessionActive,
-  sendClientEvent,
-  events,
-}) {
-  const [functionAdded, setFunctionAdded] = useState(false);
-  const [functionCallOutput, setFunctionCallOutput] = useState(null);
-
-  useEffect(() => {
-    if (!events || events.length === 0) return;
-
-    const firstEvent = events[events.length - 1];
-    if (!functionAdded && firstEvent.type === "session.created") {
-      sendClientEvent(sessionUpdate);
-      setFunctionAdded(true);
-    }
-
-    const mostRecentEvent = events[0];
-    if (
-      mostRecentEvent.type === "response.done" &&
-      mostRecentEvent.response.output
-    ) {
-      mostRecentEvent.response.output.forEach((output) => {
-        if (
-          output.type === "function_call" &&
-          output.name === "display_color_palette"
-        ) {
-          setFunctionCallOutput(output);
-          setTimeout(() => {
-            sendClientEvent({
-              type: "response.create",
-              response: {
-                instructions: `
-                ask for feedback about the color palette - don't repeat 
-                the colors, just ask if they like the colors.
-              `,
+          {
+            type: "function",
+            name: "display_color_palette",
+            description: "Provides a color palette based on a requested theme.",
+            parameters: {
+              type: "object",
+              properties: {
+                theme: {
+                  type: "string",
+                  description: "A descriptive theme (e.g., ocean, sunset, forest)",
+                },
+                colors: {
+                  type: "array",
+                  description: "A list of 5 hex color codes representing the theme",
+                  items: { type: "string" },
+                },
               },
-            });
-          }, 500);
-        }
-      });
-    }
-  }, [events]);
+              required: ["theme", "colors"],
+            },
+          },
+        ],
+        tool_choice: "auto",
+      },
+    };
 
-  useEffect(() => {
-    if (!isSessionActive) {
-      setFunctionAdded(false);
-      setFunctionCallOutput(null);
-    }
-  }, [isSessionActive]);
+    console.log("📤 Sending session update:", sessionUpdate);
+    sendClientEvent(sessionUpdate);
+    setIsToolRegistered(true);
+  }, [isSessionActive, isToolRegistered, sendClientEvent]);
 
   return (
-    <section className="h-full w-full flex flex-col gap-4">
-      <div className="h-full bg-gray-50 rounded-md p-4">
-        <h2 className="text-lg font-bold">Color Palette Tool</h2>
-        {isSessionActive ? (
-          functionCallOutput ? (
-            <FunctionCallOutput functionCallOutput={functionCallOutput} />
-          ) : (
-            <p>Ask for advice on a color palette...</p>
-          )
-        ) : (
-          <p>Start the session to use this tool...</p>
-        )}
-      </div>
-    </section>
+    <div className="p-4 border rounded-md bg-gray-100">
+      <h2 className="text-lg font-bold">Tool Panel</h2>
+      <p className="text-sm text-gray-600">Tools are registered when a session starts.</p>
+    </div>
   );
 }
